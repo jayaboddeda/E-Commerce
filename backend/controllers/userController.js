@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler'
 import generateToken from '../utils/generateToken.js'
 import User from '../models/userModel.js'
+import Order from '../models/orderModel.js'
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
@@ -117,7 +118,10 @@ const getUsers = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const deleteUser = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id)
-
+  const orders = await Order.find({ user: req.params.id })
+if(orders){
+  await Order.remove({user: req.params.id})
+}
   if (user) {
     await user.remove()
     res.json({ message: 'User removed' })
